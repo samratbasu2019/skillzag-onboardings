@@ -1,0 +1,26 @@
+app:
+  secret: 7589456a-09ef-4be1-9110-c065f0a0ac5a
+  keycloak:
+    userid: admin
+    password: Infy_Pa55w0rd
+  user:
+    url: http://localhost:8080/auth/admin/realms/apthamitra-realm/users/
+keycloak:
+  auth-server-url: http://localhost:9080/auth
+  bearer-only: true
+  realm: apthamitra-realm
+  resource: apthamitra-app
+  ssl-required: external
+  use-resource-role-mappings: true
+server:
+  connection-timeout: 6000
+  port: 8055
+  servlet:
+    context-path: /services/auth
+
+logging:
+  file: ./logs/auth-service.log
+  level:
+    org:
+      springframework: INFO
+    root: INFO

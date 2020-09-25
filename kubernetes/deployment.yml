@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: authentication
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-dev
+  namespace: authentication
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: auth-service-dev
+      version: 'v1'
+  template:
+    metadata:
+      labels:
+        app: auth-service-dev
+        version: 'v1'
+    spec:
+      containers:
+        - name: auth-service-dev
+          image:  devunifiedappregistry.azurecr.io/auth-service-dev:latest
+          env:
+            - name : "APP_SECRET"
+              value : "02345a23-8f58-4255-b5cc-247b2c4b8d87"
+            - name : "APP_KEYCLOAK_USERID"
+              value : "admin"
+            - name : "APP_KEYCLOAK_PASSWORD"
+              value : "Infy_Pa55w0rd"
+            - name : "APP_USER_URL"
+              value : "http://172.17.2.97/auth/admin/realms/apthamitra-realm/users/"
+            - name : "KEYCLOAK_AUTH_SERVER_URL"
+              value : "http://172.17.2.97/auth/" 
+            - name : "KEYCLOAK_BEARER_ONLY"
+              value : "true"
+            - name : "KEYCLOAK_REALM"
+              value : "apthamitra-realm"
+            - name : "KEYCLOAK_RESOURCE"
+              value : "apthamitra-app"
+            - name : "KEYCLOAK_SSL_REQUIRED"
+              value : "external"
+            - name : "KEYCLOAK_USE_RESOURCE_ROLE_MAPPINGS"
+              value : "true"
+            - name: "SERVER_SERVLET_CONTEXT_PATH"
+              value: "/services/auth"
+          ports:
+            - name: http
+              containerPort: 8055
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '300m'
+            limits:
+              memory: '785Mi'
+              cpu: '500m'
+          # readinessProbe:
+          #   httpGet:
+          #     path: /search/management/health
+          #     port: http
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 15
+          #   failureThreshold: 6
+          # livenessProbe:
+          #   httpGet:
+          #     path: /search/management/health
+          #     port: http
+          #   initialDelaySeconds: 120
+
+
