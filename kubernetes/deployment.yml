@@ -7,7 +7,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service-dev
+  name: skill-zag-login-service-dev
   namespace: authentication
 spec:
   replicas: 1
@@ -18,12 +18,12 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: auth-service-dev
+      app: skill-zag-login-service-dev
       version: 'v1'
   template:
     metadata:
       labels:
-        app: auth-service-dev
+        app: skill-zag-login-service-dev
         version: 'v1'
     spec:
       containers:

@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: auth-service-ingress
+  name: skill-zag-login-service-ingress
   namespace: authentication
   annotations:
     nginx.ingress.kubernetes.io/affinity: "cookie"
@@ -23,5 +23,5 @@ spec:
       paths:
       - path: /services/auth
         backend:
-          serviceName: auth-service-dev
+          serviceName: skill-zag-login-service-dev
           servicePort: 8055

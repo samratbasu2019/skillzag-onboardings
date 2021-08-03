@@ -1,4 +1,4 @@
-package com.gok.auth;
+package com.skillzag.auth;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;

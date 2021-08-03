@@ -1,4 +1,4 @@
-package com.gok.auth;
+package com.skillzag.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

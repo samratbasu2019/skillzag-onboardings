@@ -1,4 +1,4 @@
-package com.gok.auth;
+package com.skillzag.auth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,12 +19,12 @@ public class SwaggerConfig {
 
 	@Bean
 	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.gok.auth"))
+		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.skillzag.auth"))
 				.paths(PathSelectors.any()).build().apiInfo(apiInfo());
 	}
 
 	private ApiInfo apiInfo() {
-		return new ApiInfoBuilder().title("Authorization Service").description("Authorization Service").version("1.0.0")
+		return new ApiInfoBuilder().title("Skill-Zag Authorization Service").description("Skill-Zag Authorization Service").version("1.0.0")
 				.termsOfServiceUrl("http://terms-of-services.url").license("LICENSE")
 				.licenseUrl("http://url-to-license.com").build();
 	}

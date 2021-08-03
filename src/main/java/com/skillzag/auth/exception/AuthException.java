@@ -1,4 +1,4 @@
-package com.gok.auth.exception;
+package com.skillzag.auth.exception;
 
 public class AuthException extends RuntimeException {
     public AuthException(String message) {

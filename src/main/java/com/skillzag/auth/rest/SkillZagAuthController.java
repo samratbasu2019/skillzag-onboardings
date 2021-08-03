@@ -1,13 +1,9 @@
-package com.gok.auth.rest;
+package com.skillzag.auth.rest;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
-import com.gok.auth.dto.PasswordDTO;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
@@ -20,25 +16,25 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import com.gok.auth.dto.UserDTO;
-import org.springframework.web.client.RestTemplate;
+import com.skillzag.auth.dto.UserDTO;
 
 
 @Validated
 @RequestMapping(value = "/users")
 @RestController
-public class AuthController {
+public class SkillZagAuthController {
 
-    protected final Log log = LogFactory.getLog(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(SkillZagAuthController.class);
 
     @Value("${keycloak.auth-server-url}")
     private String authServerUrl;
@@ -62,7 +58,9 @@ public class AuthController {
                 .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
                 .username(userid).password(password)
                 .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
-
+        Map<String, List<String>> attributes = new HashMap<>();
+        attributes.put("mobile", Arrays.asList(userDTO.getMobile()));
+        attributes.put("role", Arrays.asList(userDTO.getRole()));
         keycloak.tokenManager().getAccessToken();
         String token = keycloak.tokenManager().getAccessTokenString();
         UserRepresentation user = new UserRepresentation();
@@ -71,8 +69,7 @@ public class AuthController {
         user.setFirstName(userDTO.getFirstname());
         user.setLastName(userDTO.getLastname());
         user.setEmail(userDTO.getEmail());
-        //user.setRequiredActions(Arrays.asList("Update Password"));
-        user.setAttributes(Collections.singletonMap("mobile", Arrays.asList(userDTO.getMobile())));
+        user.setAttributes(attributes);
         // Get realm
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersRessource = realmResource.users();
@@ -84,39 +81,25 @@ public class AuthController {
 
         if (response.getStatus() == 201) {
             String userId = CreatedResponseUtil.getCreatedId(response);
-            log.info("Created userId : " + userId);
-            UserResource userResource = keycloak.realm(realm).users().get(userId);
+            log.info("Created userId {}", userId);
+            // create password credential
+            CredentialRepresentation passwordCred = new CredentialRepresentation();
+            passwordCred.setTemporary(false);
+            passwordCred.setType(CredentialRepresentation.PASSWORD);
+            passwordCred.setValue(userDTO.getPassword());
+            UserResource userResource = usersRessource.get(userId);
             // Set password credential
-            log.info("User password is : " + userDTO.getPassword());
-            // userResource.resetPassword(passwordCred);
-            // Get realm role
-            RoleRepresentation realmRoleUser = realmResource.roles().get(userDTO.getRole()).toRepresentation();
-            // Assign realm role to user
+            userResource.resetPassword(passwordCred);
+            // Get realm role student
+            RoleRepresentation realmRoleUser = realmResource.roles().get("b2b").toRepresentation();
+            // Assign realm role student to user
             userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));
-            PasswordDTO up = new PasswordDTO();
-            up.setTemporary(true);
-            up.setType("password");
-            up.setValue(userDTO.getPassword());
-            setUserPassword(token, up, userId);
         }
         return ResponseEntity.ok(userDTO);
     }
 
-    private void setUserPassword(String token, PasswordDTO passwordDTO, String userId) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.setBearerAuth(token);
-        HttpEntity<PasswordDTO> entity = new HttpEntity<PasswordDTO>(passwordDTO, headers);
-
-        ResponseEntity<String> body = restTemplate.exchange(
-                userUrl + userId + "/reset-password"
-                , HttpMethod.PUT, entity, String.class);
-    }
-
     @PostMapping(path = "/signin")
     public ResponseEntity<?> signin(@RequestBody UserDTO userDTO) {
-
         Map<String, Object> clientCredentials = new HashMap<>();
         clientCredentials.put("secret", clientSecret);
         clientCredentials.put("grant_type", "password");
@@ -124,27 +107,22 @@ public class AuthController {
         Configuration configuration =
                 new Configuration(authServerUrl, realm, clientId, clientCredentials, null);
         AuthzClient authzClient = AuthzClient.create(configuration);
-        AccessTokenResponse response = null;
-        try {
-            response =
-                    authzClient.obtainAccessToken(userDTO.getUsername(), userDTO.getPassword());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.badRequest().body("Invalid user credentials");
-        }
+
+        AccessTokenResponse response =
+                authzClient.obtainAccessToken(userDTO.getEmail(), userDTO.getPassword());
 
         return ResponseEntity.ok(response);
     }
 
 
     @GetMapping(value = "/unprotected-api")
-    public ResponseEntity<String> getName() {
+    public ResponseEntity<?> getName() {
         return ResponseEntity.ok("This api is NOT protected.");
     }
 
 
     @GetMapping(value = "/protected-api")
-    public ResponseEntity<String> getEmail(@RequestHeader String authorization) {
+    public ResponseEntity<?> getEmail(@RequestHeader String authorization) {
         java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
         String[] parts = authorization.split("\\.");
 
@@ -161,7 +139,7 @@ public class AuthController {
         String body = new String(base64Url.decode(base64EncodedBody));
         log.info("JWT Body : " + body);
 
-        return ResponseEntity.ok("This api is protected. JWT Body " + body);
+        return ResponseEntity.ok(body);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.gok.auth.config;
+package com.skillzag.auth.config;
 
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;

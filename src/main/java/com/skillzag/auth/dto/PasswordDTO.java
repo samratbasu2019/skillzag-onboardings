@@ -1,4 +1,4 @@
-package com.gok.auth.dto;
+package com.skillzag.auth.dto;
 
 import lombok.Data;
 

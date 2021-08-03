@@ -1,25 +1,25 @@
 app:
-  secret: 71162bfe-9825-4b0b-bd2b-31d90f2f0f9c
+  secret: 231b23cc-1991-4f69-ab0e-b30264532667
   keycloak:
     userid: admin
-    password: Infy_Pa55w0rd
+    password: admin
   user:
-    url: http://localhost:8080/auth/admin/realms/apthamitra-realm/users/
+    url: http://localhost:8080/auth/admin/realms/skillzag-realm/users/
 keycloak:
   auth-server-url: http://localhost:8080/auth
   bearer-only: true
-  realm: apthamitra-realm
-  resource: apthamitra-app
+  realm: skillzag-realm
+  resource: skillzag-app
   ssl-required: external
   use-resource-role-mappings: true
 server:
   connection-timeout: 6000
   port: 8055
   servlet:
-    context-path: /services/auth
+    context-path: /skillzag/auth
 
 logging:
-  file: ./logs/auth-service.log
+  file: ./logs/skill-zag-login-service.log
   level:
     org:
       springframework: INFO

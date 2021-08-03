@@ -1,32 +1,29 @@
-POST /services/auth/users/create HTTP/1.1
-Host: localhost:8055
-Content-Type: application/json
-
-{
-  "email": "tamal@gmail.com",
-  "firstname": "tamal",
-  "lastname": "basu",
-  "mobile": "999999999",
-  "password": "test",
-  "role": "doctor",
-  "username": "tamal"
-}
+1. Create a public client and realm in keycloak
 
 
-POST /services/auth/users/signin HTTP/1.1
-Host: localhost:8055
-Content-Type: application/json
-
-{
-
-  "password": "test",
-  "username": "krishna@gmail.com"
-}
+curl -X POST \
+http://localhost:8055/services/auth/users/create \
+-H 'cache-control: no-cache' \
+-H 'content-type: application/json' \
+-H 'postman-token: 7b24a4d9-4856-9b10-14da-ecbb32a281ba' \
+-d '{ "email": "krishna@gmail.com", "firstname": "krishna", "lastname": "basu", "mobile": "999999999", "password": "krishna", "role": "b2b", "username": "krishna@gmail.com" }'
 
 
-GET /services/auth/users/protected-api HTTP/1.1
-Host: localhost:8055
-Accept: */*
-authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJoRU1WclhfTDBtdVU0OHQ3b2FsbDRGbVQwZjRja0JxUnJxbUZWazZ1WXNVIn0.eyJleHAiOjE2MDA1NzYxMTMsImlhdCI6MTYwMDU3NTgxMywianRpIjoiNTM2NTZlMzEtYWU1My00ZjU2LWEzNWEtZGY0MDUzZDdlOGJiIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwdGhhbWl0cmEtcmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNzNiYmJhZTItOTI3OC00ZGQwLTk0OTEtM2JkYmFiYjZhZDA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYXB0aGFtaXRyYS1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiODYwYThmNmEtYjI3YS00NmMwLWExYTYtYTk3YzgzNWI0MDNhIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJST0xFX0RPQ1RPUiIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJzYW1yYXQgYmFzdSIsInByZWZlcnJlZF91c2VybmFtZSI6InNhbXJhdC5iYXN1QGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJzYW1yYXQiLCJmYW1pbHlfbmFtZSI6ImJhc3UiLCJlbWFpbCI6InNhbXJhdC5iYXN1QGdtYWlsLmNvbSJ9.EeS6qpulAWpC6oKeGhGCfkM4JpXVAoKCuBbRIdcZyK9XPtHLGuCm8Q0cNXJTrvV_WrBPsTC42exftiG-akZ7QI1t-TFkxpSjIoK86-LUoMAQsIUJ0h5QJE-2v4oSwHJ4KYAk1O2ixnDVlWz6bWfTLalHJwLcOsLmTIycZhlIsQGzE6ILSq0i-8jeOtG3O_WZN8t7fsNtULA0NoUdXWHtJCGZAhhhVxey5ydTD79ecnWFY2JeMmdgEp0-izAzeLCN-ZBh7RS0ST-WQXiI4YlLF1V7ZBjgavTrGzm8RzWoPu_cfJtGP_84aCbi5puZMHzJ9HkMnwpewbEFgJWE_OPMxQ
-Cache-Control: no-cache
-Postman-Token: 04e314e0-7f2e-94e2-e6cb-fb3abeb17b1d
+curl -X POST \
+http://localhost:8055/services/auth/users/signin \
+-H 'cache-control: no-cache' \
+-H 'content-type: application/json' \
+-H 'postman-token: 4db1dc89-4196-7dcb-d529-afd6f609ef08' \
+-d '{
+"username": "krishna@gmail.com",
+"email": "krishna@gmail.com",
+"role": "b2b",
+"password": "krishna"
+}'
+
+
+curl -X GET \
+http://localhost:8055/services/auth/users/protected-api \
+-H 'authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJPTWh2YW9XMHgxZW9xNWdTd1l2ajFzTjJ0VDU2NzE5aHM2eFdsZml2bDJFIn0.eyJleHAiOjE2MjgwMDY2MzMsImlhdCI6MTYyODAwNjMzMywianRpIjoiMjc4MzhhYTgtOWUxNi00OGQ1LWIxMGEtMmM2MjE5NzI2MGRlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NraWxsemFnLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImEyY2E4M2ZmLTJjYTAtNDI2Mi05NDNhLTY5OTA2Mzg2ZmQ1NCIsInR5cCI6IkJlYXJlciIsImF6cCI6InNraWxsemFnLWFwcCIsInNlc3Npb25fc3RhdGUiOiIzMDBkZTI5Yi1mMjdmLTQ0MDAtYmU5Ni02N2FiYjg1MDE3ZTkiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImIyYyIsImIyYiIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJwYWRtaW4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJrcmlzaG5hIGJhc3UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJrcmlzaG5hQGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJrcmlzaG5hIiwiZmFtaWx5X25hbWUiOiJiYXN1IiwiZW1haWwiOiJrcmlzaG5hQGdtYWlsLmNvbSJ9.aOegwQAB9w_tkQqlUBgn3SHJVtWA_lXI-3sYpiXLr0eKWlLkzdOHZV2YhMCCNxeyo1HAvg2W8BDnwCEgBBd98-d2dzeLdy4bZLPoJd-O7GIrev8qciUNabB6CHXAOCX66iRNqQ-E_0IW8BtzJbwSJuYjydhXHzohMzh1sG7B2I1JT4RkzKaWWzs4fD6klBH3qXe6c5UIV87nc42Mf_uUHVpj9rtuzDFVYx5LETYw1oYLCvkIrfKo_zA3GlnAUD6OpBi7nbtCU5qZ2srcjJzK4R9Z37pQ17SrYLrWzZxwykDXeXw89d2f9YstV1Kh-RsiaR0km-tXWpoBWKsOaXGAHw' \
+-H 'cache-control: no-cache' \
+-H 'postman-token: 62b41508-741b-f38a-e791-0b2003e2b4ed'

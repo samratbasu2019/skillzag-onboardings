@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service-dev
+  name: skill-zag-login-service-dev
   namespace: authentication
   labels:
-    app: auth-service-dev
+    app: skill-zag-login-service-dev
 
 spec:
   selector:
