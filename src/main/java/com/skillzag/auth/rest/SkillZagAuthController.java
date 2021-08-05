@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.skillzag.auth.dto.UserDTO;
 
+import static java.util.Objects.isNull;
+
 
 @Validated
 @RequestMapping(value = "/users")
@@ -59,17 +61,29 @@ public class SkillZagAuthController {
                 .username(userid).password(password)
                 .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
         Map<String, List<String>> attributes = new HashMap<>();
-        attributes.put("mobile", Arrays.asList(userDTO.getMobile()));
+        attributes.put("phoneNumber", Arrays.asList(userDTO.getPhoneNumber()));
         attributes.put("role", Arrays.asList(userDTO.getRole()));
+        if (!isNull(userDTO.getInstitutionName())) {
+            attributes.put("institutionName", Arrays.asList(userDTO.getInstitutionName()));
+        }
+        if (!isNull(userDTO.getInstitutionID())) {
+            attributes.put("institutionID", Arrays.asList(userDTO.getInstitutionID()));
+        }
+        if (!isNull(userDTO.getAddress1())) {
+            attributes.put("address1", Arrays.asList(userDTO.getAddress1()));
+        }
+        if (!isNull(userDTO.getAddress2())) {
+            attributes.put("address2", Arrays.asList(userDTO.getAddress2()));
+        }
         keycloak.tokenManager().getAccessToken();
         String token = keycloak.tokenManager().getAccessTokenString();
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
-        user.setUsername(userDTO.getUsername());
         user.setFirstName(userDTO.getFirstname());
         user.setLastName(userDTO.getLastname());
         user.setEmail(userDTO.getEmail());
         user.setAttributes(attributes);
+        user.setUsername(userDTO.getEmail());
         // Get realm
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersRessource = realmResource.users();
@@ -91,29 +105,12 @@ public class SkillZagAuthController {
             // Set password credential
             userResource.resetPassword(passwordCred);
             // Get realm role student
-            RoleRepresentation realmRoleUser = realmResource.roles().get("b2b").toRepresentation();
+            RoleRepresentation realmRoleUser = realmResource.roles().get(userDTO.getRole()).toRepresentation();
             // Assign realm role student to user
             userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));
         }
         return ResponseEntity.ok(userDTO);
     }
-
-    @PostMapping(path = "/signin")
-    public ResponseEntity<?> signin(@RequestBody UserDTO userDTO) {
-        Map<String, Object> clientCredentials = new HashMap<>();
-        clientCredentials.put("secret", clientSecret);
-        clientCredentials.put("grant_type", "password");
-
-        Configuration configuration =
-                new Configuration(authServerUrl, realm, clientId, clientCredentials, null);
-        AuthzClient authzClient = AuthzClient.create(configuration);
-
-        AccessTokenResponse response =
-                authzClient.obtainAccessToken(userDTO.getEmail(), userDTO.getPassword());
-
-        return ResponseEntity.ok(response);
-    }
-
 
     @GetMapping(value = "/unprotected-api")
     public ResponseEntity<?> getName() {
