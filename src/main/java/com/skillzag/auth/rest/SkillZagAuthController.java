@@ -61,7 +61,9 @@ public class SkillZagAuthController {
                 .username(userid).password(password)
                 .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
         Map<String, List<String>> attributes = new HashMap<>();
-        attributes.put("phoneNumber", Arrays.asList(userDTO.getPhoneNumber()));
+        if (!isNull(userDTO.getPhoneNumber())) {
+            attributes.put("phoneNumber", Arrays.asList(userDTO.getPhoneNumber()));
+        }
         attributes.put("role", Arrays.asList(userDTO.getRole()));
         if (!isNull(userDTO.getInstitutionName())) {
             attributes.put("institutionName", Arrays.asList(userDTO.getInstitutionName()));
