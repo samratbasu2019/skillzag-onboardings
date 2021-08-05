@@ -4,6 +4,7 @@ import java.util.*;
 import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
+import com.skillzag.auth.util.ResponseHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
@@ -13,9 +14,6 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.authorization.client.AuthzClient;
-import org.keycloak.authorization.client.Configuration;
-import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -28,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.skillzag.auth.dto.UserDTO;
 
+import static com.skillzag.auth.util.Constants.EMPTY_ROLE_MESSAGE;
 import static java.util.Objects.isNull;
 
 
@@ -55,6 +54,10 @@ public class SkillZagAuthController {
 
     @PostMapping(path = "/create")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
+        if (isNull(userDTO.getRole())) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(EMPTY_ROLE_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
                 .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
