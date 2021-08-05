@@ -1,6 +1,7 @@
 1. Create a public client in keycloak 12.0.4. Pls check the props files in order to create realm and 
    public client. Also, this application accepts b2b and b2c user roles. These roles need to be configured in Keycloak
 
+import sample postman collection for test.
 
 curl -X POST \
 http://localhost:8055/skillzag/auth/users/create \
