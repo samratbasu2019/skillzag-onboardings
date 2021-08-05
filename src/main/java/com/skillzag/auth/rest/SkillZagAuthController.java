@@ -123,8 +123,8 @@ public class SkillZagAuthController {
     }
 
 
-    @GetMapping(value = "/view-token")
-    public ResponseEntity<?> getEmail(@RequestHeader String authorization) {
+    @GetMapping(value = "/decrypt-token")
+    public ResponseEntity<?> decryptToken(@RequestHeader String authorization) {
         java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
         String[] parts = authorization.split("\\.");
 

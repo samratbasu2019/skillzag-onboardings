@@ -255,7 +255,7 @@
 			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
 			"data": null,
 			"dataMode": "params",
-			"name": "View Token Content",
+			"name": "Decrypt Token Content",
 			"description": "",
 			"descriptionFormat": "html",
 			"time": 1628047070128,
