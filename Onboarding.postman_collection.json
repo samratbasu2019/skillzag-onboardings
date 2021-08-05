@@ -1,0 +1,137 @@
+{
+	"id": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
+	"name": "Onboarding",
+	"description": "",
+	"order": [
+		"5d43b9cc-0e12-4a5c-1b3d-fe2b825fbd56",
+		"39220f30-3d5e-8168-0879-0158688f455d",
+		"951ea717-e8bc-6764-7a5f-bd37e8aa079f"
+	],
+	"folders": [],
+	"folders_order": [],
+	"timestamp": 1628047037505,
+	"owner": 0,
+	"public": false,
+	"requests": [
+		{
+			"id": "39220f30-3d5e-8168-0879-0158688f455d",
+			"headers": "//Content-Type: application/json\nclient-id: skillzag-app\nclient-secret: ed169803-d750-4c02-8add-38b1c3e4594d\ngrant_type: password\nusername: krishna@gmail.com\npassword: krishna123\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "client-id",
+					"value": "skillzag-app",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "client-secret",
+					"value": "ed169803-d750-4c02-8add-38b1c3e4594d",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "grant_type",
+					"value": "password",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "username",
+					"value": "krishna@gmail.com",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "krishna123",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://localhost:8080/auth/admin/realms/skillzag-realm/protocol/openid-connect/token",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1628129013529,
+			"name": "http://localhost:8080/auth/admin/realms/skillzag-realm/protocol/openid-connect/token",
+			"description": "",
+			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
+			"responses": [],
+			"rawModeData": "{\n\t\"email\": \"krishna@gmail.com\",\n\t\"firstname\": \"krishna\",\n\t\"lastname\": \"basu\",\n\t\"phoneNumber\": \"999999999\",\n\t\"password\": \"krishna123\",\n\t\"role\": \"b2b\",\n\t\"institutionName\": \"NSEC\",\n\t\"institutionID\": \"001\"\n}"
+		},
+		{
+			"id": "5d43b9cc-0e12-4a5c-1b3d-fe2b825fbd56",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8055/skillzag/auth/users/create",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1628095481313,
+			"name": "localhost:8055/skillzag/auth/users/create",
+			"description": "",
+			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
+			"responses": [],
+			"rawModeData": "{\n\t\"email\": \"krishna@gmail.com\",\n\t\"firstname\": \"krishna\",\n\t\"lastname\": \"basu\",\n\t\"phoneNumber\": \"999999999\",\n\t\"password\": \"krishna123\",\n\t\"role\": \"b2b\",\n\t\"institutionName\": \"NSEC\",\n\t\"institutionID\": \"001\"\n}"
+		},
+		{
+			"id": "951ea717-e8bc-6764-7a5f-bd37e8aa079f",
+			"headers": "Authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJPTWh2YW9XMHgxZW9xNWdTd1l2ajFzTjJ0VDU2NzE5aHM2eFdsZml2bDJFIn0.eyJleHAiOjE2MjgwMTIyNjUsImlhdCI6MTYyODAxMTk2NSwianRpIjoiMmFmMzA2MmQtY2FjYi00NGE0LWE3MzAtOGFkODVkZWNjY2VkIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NraWxsemFnLXJlYWxtIiwic3ViIjoiNDI2MWVjNmQtYjE2ZC00ZGI5LWEwODItZmE3OGFjYTU0NjEzIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2tpbGx6YWctYXBwIiwic2Vzc2lvbl9zdGF0ZSI6IjIzMWI4YTE5LTg5NmMtNDBkYS1hZjA5LWU1N2JjMmQyMWMxOCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiYjJjIiwiYjJiIiwicGFkbWluIl19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInJvbGUiOiJiMmIiLCJuYW1lIjoia3Jpc2huYSBiYXN1IiwibW9iaWxlIjoiOTk5OTk5OTk5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoia3Jpc2huYSIsImdpdmVuX25hbWUiOiJrcmlzaG5hIiwiZmFtaWx5X25hbWUiOiJiYXN1IiwiZW1haWwiOiJrcmlzaG5hQGdtYWlsLmNvbSJ9.Ss-CcXNjHlC6InTn_j6pGKTKgRAdQ6jOKVTr7L4jLTVu-xbMKKp9pgM2u1ViJU7sKKQDpcgvsDae14yWbrO9WDViF1bXK57AeRXYYCxnLUkVeJzMA4ZfvlY0ZYOdKOpgypBUBM7RAnAvy7KTGvmIUdB4JTmfy3uWEkCsS_CXwBZTdD-5sqy8YETVi6MhU99Wsm3lMg0A44UcGxeqLiUZWLDKSbI_kDz3eQ5OuI_b9wkklu9FtnfX96-SiUuocNkHCOKrcVymwXAR0wsHspoKMR4lCYc5coE2ZgXrpdgcVAPSVTqq1-Y5vDQIZQAmBsO_SI8DLwyO2EqBW5jwQldmtQ\n",
+			"headerData": [
+				{
+					"key": "Authorization",
+					"value": "bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJPTWh2YW9XMHgxZW9xNWdTd1l2ajFzTjJ0VDU2NzE5aHM2eFdsZml2bDJFIn0.eyJleHAiOjE2MjgwMTIyNjUsImlhdCI6MTYyODAxMTk2NSwianRpIjoiMmFmMzA2MmQtY2FjYi00NGE0LWE3MzAtOGFkODVkZWNjY2VkIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NraWxsemFnLXJlYWxtIiwic3ViIjoiNDI2MWVjNmQtYjE2ZC00ZGI5LWEwODItZmE3OGFjYTU0NjEzIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2tpbGx6YWctYXBwIiwic2Vzc2lvbl9zdGF0ZSI6IjIzMWI4YTE5LTg5NmMtNDBkYS1hZjA5LWU1N2JjMmQyMWMxOCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiYjJjIiwiYjJiIiwicGFkbWluIl19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInJvbGUiOiJiMmIiLCJuYW1lIjoia3Jpc2huYSBiYXN1IiwibW9iaWxlIjoiOTk5OTk5OTk5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoia3Jpc2huYSIsImdpdmVuX25hbWUiOiJrcmlzaG5hIiwiZmFtaWx5X25hbWUiOiJiYXN1IiwiZW1haWwiOiJrcmlzaG5hQGdtYWlsLmNvbSJ9.Ss-CcXNjHlC6InTn_j6pGKTKgRAdQ6jOKVTr7L4jLTVu-xbMKKp9pgM2u1ViJU7sKKQDpcgvsDae14yWbrO9WDViF1bXK57AeRXYYCxnLUkVeJzMA4ZfvlY0ZYOdKOpgypBUBM7RAnAvy7KTGvmIUdB4JTmfy3uWEkCsS_CXwBZTdD-5sqy8YETVi6MhU99Wsm3lMg0A44UcGxeqLiUZWLDKSbI_kDz3eQ5OuI_b9wkklu9FtnfX96-SiUuocNkHCOKrcVymwXAR0wsHspoKMR4lCYc5coE2ZgXrpdgcVAPSVTqq1-Y5vDQIZQAmBsO_SI8DLwyO2EqBW5jwQldmtQ",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8055/skillzag/auth/users/protected-api",
+			"queryParams": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"preRequestScript": null,
+			"method": "GET",
+			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
+			"data": null,
+			"dataMode": "params",
+			"name": "localhost:8055/skillzag/auth/users/protected-api",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1628047070128,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		}
+	]
+}
