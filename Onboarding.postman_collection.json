@@ -4,7 +4,9 @@
 	"description": "",
 	"order": [
 		"5d43b9cc-0e12-4a5c-1b3d-fe2b825fbd56",
+		"cd338881-f9d6-dac2-c19a-69aa964cb769",
 		"39220f30-3d5e-8168-0879-0158688f455d",
+		"5599d179-e897-3729-4659-cbc6f8406211",
 		"951ea717-e8bc-6764-7a5f-bd37e8aa079f"
 	],
 	"folders": [],
@@ -15,63 +17,193 @@
 	"requests": [
 		{
 			"id": "39220f30-3d5e-8168-0879-0158688f455d",
-			"headers": "//Content-Type: application/json\nclient-id: skillzag-app\nclient-secret: ed169803-d750-4c02-8add-38b1c3e4594d\ngrant_type: password\nusername: krishna@gmail.com\npassword: krishna123\n",
+			"headers": "Content-Type: application/x-www-form-urlencoded\n//client_id: skillzag-app\n//client_secret: ed169803-d750-4c02-8add-38b1c3e4594d\n//grant_type: password\n//username: krishna@gmail.com\n//password: krishna123\nAccept: application/json\n",
 			"headerData": [
 				{
 					"key": "Content-Type",
-					"value": "application/json",
-					"description": "",
-					"enabled": false
-				},
-				{
-					"key": "client-id",
-					"value": "skillzag-app",
+					"value": "application/x-www-form-urlencoded",
 					"description": "",
 					"enabled": true
 				},
 				{
-					"key": "client-secret",
+					"key": "client_id",
+					"value": "skillzag-app",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "client_secret",
 					"value": "ed169803-d750-4c02-8add-38b1c3e4594d",
 					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "grant_type",
+					"value": "password",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "username",
+					"value": "krishna@gmail.com",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "password",
+					"value": "krishna123",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "Accept",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://localhost:8080/auth/realms/skillzag-realm/protocol/openid-connect/token",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [
+				{
+					"key": "client_id",
+					"value": "skillzag-app",
+					"description": "",
+					"type": "text",
 					"enabled": true
 				},
 				{
 					"key": "grant_type",
 					"value": "password",
 					"description": "",
+					"type": "text",
 					"enabled": true
+				},
+				{
+					"key": "username",
+					"value": "rahul@gmail.com",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "rahul123",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1628140161105,
+			"name": "Get Access Token",
+			"description": "",
+			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
+			"responses": []
+		},
+		{
+			"id": "5599d179-e897-3729-4659-cbc6f8406211",
+			"headers": "Content-Type: application/x-www-form-urlencoded\n//client_id: skillzag-app\n//client_secret: ed169803-d750-4c02-8add-38b1c3e4594d\n//grant_type: password\n//username: krishna@gmail.com\n//password: krishna123\nAccept: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "client_id",
+					"value": "skillzag-app",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "client_secret",
+					"value": "ed169803-d750-4c02-8add-38b1c3e4594d",
+					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "grant_type",
+					"value": "password",
+					"description": "",
+					"enabled": false
 				},
 				{
 					"key": "username",
 					"value": "krishna@gmail.com",
 					"description": "",
-					"enabled": true
+					"enabled": false
 				},
 				{
 					"key": "password",
 					"value": "krishna123",
 					"description": "",
+					"enabled": false
+				},
+				{
+					"key": "Accept",
+					"value": "application/json",
+					"description": "",
 					"enabled": true
 				}
 			],
-			"url": "http://localhost:8080/auth/admin/realms/skillzag-realm/protocol/openid-connect/token",
+			"url": "http://localhost:8080/auth/realms/skillzag-realm/protocol/openid-connect/token",
 			"queryParams": [],
 			"preRequestScript": null,
 			"pathVariables": {},
 			"pathVariableData": [],
 			"method": "POST",
-			"data": [],
-			"dataMode": "raw",
+			"data": [
+				{
+					"key": "client_id",
+					"value": "skillzag-app",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "grant_type",
+					"value": "password",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "username",
+					"value": "rahul@gmail.com",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "rahul123",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
 			"version": 2,
 			"tests": null,
 			"currentHelper": "normal",
 			"helperAttributes": {},
-			"time": 1628129013529,
-			"name": "http://localhost:8080/auth/admin/realms/skillzag-realm/protocol/openid-connect/token",
+			"time": 1628140161105,
+			"name": "Get Access Token Test",
 			"description": "",
 			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
 			"responses": [],
-			"rawModeData": "{\n\t\"email\": \"krishna@gmail.com\",\n\t\"firstname\": \"krishna\",\n\t\"lastname\": \"basu\",\n\t\"phoneNumber\": \"999999999\",\n\t\"password\": \"krishna123\",\n\t\"role\": \"b2b\",\n\t\"institutionName\": \"NSEC\",\n\t\"institutionID\": \"001\"\n}"
+			"isFromCollection": true,
+			"collectionRequestId": "39220f30-3d5e-8168-0879-0158688f455d"
 		},
 		{
 			"id": "5d43b9cc-0e12-4a5c-1b3d-fe2b825fbd56",
@@ -96,12 +228,12 @@
 			"tests": null,
 			"currentHelper": "normal",
 			"helperAttributes": {},
-			"time": 1628095481313,
-			"name": "localhost:8055/skillzag/auth/users/create",
+			"time": 1628140164734,
+			"name": "Create Users",
 			"description": "",
 			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
 			"responses": [],
-			"rawModeData": "{\n\t\"email\": \"krishna@gmail.com\",\n\t\"firstname\": \"krishna\",\n\t\"lastname\": \"basu\",\n\t\"phoneNumber\": \"999999999\",\n\t\"password\": \"krishna123\",\n\t\"role\": \"b2b\",\n\t\"institutionName\": \"NSEC\",\n\t\"institutionID\": \"001\"\n}"
+			"rawModeData": "{\n\t\"email\": \"tamal@gmail.com\",\n\t\"firstname\": \"rahul\",\n\t\"lastname\": \"das\",\n\t\"phoneNumber\": \"9078781170\",\n\t\"password\": \"rahul123\",\n\t\"role\": \"b2c\",\n\t\"institutionName\": \"NSEC\",\n\t\"institutionID\": \"001\"\n}"
 		},
 		{
 			"id": "951ea717-e8bc-6764-7a5f-bd37e8aa079f",
@@ -123,7 +255,7 @@
 			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
 			"data": null,
 			"dataMode": "params",
-			"name": "localhost:8055/skillzag/auth/users/protected-api",
+			"name": "View Token Content",
 			"description": "",
 			"descriptionFormat": "html",
 			"time": 1628047070128,
@@ -132,6 +264,38 @@
 			"tests": null,
 			"currentHelper": "normal",
 			"helperAttributes": {}
+		},
+		{
+			"id": "cd338881-f9d6-dac2-c19a-69aa964cb769",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8055/skillzag/auth/users/create",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1628140164734,
+			"name": "Create Users Test",
+			"description": "",
+			"collectionId": "f9c6ecd0-2a6a-70a3-ea86-ae88b1e0773b",
+			"responses": [],
+			"isFromCollection": true,
+			"collectionRequestId": "5d43b9cc-0e12-4a5c-1b3d-fe2b825fbd56",
+			"rawModeData": "{\n\t\"email\": \"tamal@gmail.com\",\n\t\"firstname\": \"rahul\",\n\t\"lastname\": \"das\",\n\t\"phoneNumber\": \"9078781170\",\n\t\"password\": \"rahul123\",\n\t\"role\": \"b2c\",\n\t\"institutionName\": \"NSEC\",\n\t\"institutionID\": \"001\"\n}"
 		}
 	]
 }

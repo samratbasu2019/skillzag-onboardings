@@ -123,7 +123,7 @@ public class SkillZagAuthController {
     }
 
 
-    @GetMapping(value = "/protected-api")
+    @GetMapping(value = "/view-token")
     public ResponseEntity<?> getEmail(@RequestHeader String authorization) {
         java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
         String[] parts = authorization.split("\\.");
@@ -135,11 +135,11 @@ public class SkillZagAuthController {
 
         log.info("~~~~~~~~~ JWT Header ~~~~~~~");
         String header = new String(base64Url.decode(base64EncodedHeader));
-        log.info("JWT Header : " + header);
+        log.info("JWT Header {} ", header);
 
         log.info("~~~~~~~~~ JWT Body ~~~~~~~");
         String body = new String(base64Url.decode(base64EncodedBody));
-        log.info("JWT Body : " + body);
+        log.info("JWT Body {} ", body);
 
         return ResponseEntity.ok(body);
     }
