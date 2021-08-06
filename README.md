@@ -1,5 +1,11 @@
-1. Create a public client in keycloak 12.0.4. Pls check the props files in order to create realm and 
+1. Create a public client in keycloak 11.0.2. Pls check the props files in order to create realm and 
    public client. Also, this application accepts b2b and b2c user roles. These roles need to be configured in Keycloak
+In keycloak 11.0.2 > standalone > Configuration > create a profile.properties and put following text
+   profile=preview
+   feature.account_api=enabled
+
+Follow this document to setup email in keycloak.
+https://codehumsafar.wordpress.com/2018/09/23/keycloak-configure-and-test-email-settings-for-realm/
 
 import sample postman collection for test.
 
@@ -34,5 +40,38 @@ http://localhost:8055/skillzag/auth/users/decrypt-token \
 -H 'cache-control: no-cache' \
 -H 'postman-token: 800544dc-5d28-94d1-bb11-1639d0cac6ff'
 
+curl -X PUT \
+http://localhost:8080/auth/admin/realms/skillzag-realm/users/eef73600-b032-4570-b781-7fccd77cad07/execute-actions-email \
+-H 'accept: application/json' \
+-H 'authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ1dzNkdlp3T3BMMjJyVkFFRnRMV0x2WTkzdlMydGhIUXIyeWV5b19rVTkwIn0.eyJleHAiOjE2MjgyMTc5OTUsImlhdCI6MTYyODIxNzkzNSwianRpIjoiMWNmYjE4MjUtMDBkMi00MGQ4LWFlZDgtM2UyZmYzZjViZDY2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL21hc3RlciIsInN1YiI6ImY5NzkwODIyLTc1Y2YtNDg2OS05N2IwLWYwNjU0NWNkNDUzYyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNlc3Npb25fc3RhdGUiOiI2YmFhMjk0ZC1jMDFkLTQ1YjctODRhMS05ZjQ5OTljZWNiNTUiLCJhY3IiOiIxIiwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiU2FtcmF0IEJhc3UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhZG1pbiIsImdpdmVuX25hbWUiOiJTYW1yYXQiLCJmYW1pbHlfbmFtZSI6IkJhc3UiLCJlbWFpbCI6ImhhY2thdGhvbi5pbmZ5MjAyMEBnbWFpbC5jb20ifQ.Ngf_a0o27Gl6cF4WMaVNIFzWUiuCSllR97LvypYGP2lu90Ljv7Qea-9XDuInYpJruzsGlqyKjYVne2PXKJ1jaCXrmcV_fZQY9S78fSKr7f6RdiMYroI7WqTXIsDedJZTfgWAayHiXAEhrmYgBFvqCB_mBheXFeCXNnCC6zoShbYQgiS7PvYjc7IYZYxrmbqago9oONZKSx9D2wh1-NseFt5oXKIvkHaVpRUAsjo_SbadxzWUyv6fX-_1z4pW4iNuktlbE-JaZG4b2MgNhn7zHIKYuvOT7P66phLBJOSNHCyuzw_yRpNpwsWFGBT8uFUy5f4iBa1oJqkkmIyFsHM6jg' \
+-H 'cache-control: no-cache' \
+-H 'content-type: application/json' \
+-H 'postman-token: 7e572c7e-b7cb-3f5d-a52f-478d75e7e23b' \
+-d '["UPDATE_PASSWORD"]'
 
+curl -X POST \
+http://localhost:8080/auth/realms/skillzag-realm/account/credentials/password \
+-H 'accept: application/json' \
+-H 'authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJwWjl4eGd3TkpvWVhESWxPVl95VF9NYzBJYVZqYS1tejBVZzJFVEFQcWpBIn0.eyJleHAiOjE2MjgyMTU5MzYsImlhdCI6MTYyODIxNTYzNiwianRpIjoiMTA4MGMzNmItYTMyMy00NDQyLTk3OTktMzZhZjQ0NmRiZGNlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NraWxsemFnLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVlZjczNjAwLWIwMzItNDU3MC1iNzgxLTdmY2NkNzdjYWQwNyIsInR5cCI6IkJlYXJlciIsImF6cCI6InNraWxsemFnLWFwcCIsInNlc3Npb25fc3RhdGUiOiJkZjFhZGE2Ny04YmM4LTQwNmUtODI3ZC0xYTBmZjYzMTE3Y2MiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImIyYiIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInJvbGUiOiJiMmIiLCJwaG9uZU51bWJlciI6IjkwNzg3ODExNzAiLCJpbnN0aXR1dGlvbklEIjoiMDAyIiwibmFtZSI6InNhbXJhdCBiYXN1IiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2FtdGluYS5iYXN1QGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJzYW1yYXQiLCJmYW1pbHlfbmFtZSI6ImJhc3UiLCJlbWFpbCI6InNhbXRpbmEuYmFzdUBnbWFpbC5jb20ifQ.SSE6_1wDeGuZ7JHjhkAcXnB2YzlH6wtXRfKjch0vCcTd8XsdEMlFKA27Iv65HeHzi4zNMZc598V_rnnXSZuqsf8Yp9Zy_iZ5K2dwhIvysSIumQMrJePIfKgCCedIPJb6dQz1BsUDgn596AGVHtatAnIdq6XvSDK14Bs-uGEflggv3twZExqpUXB6fYPegy5gLcab-TKMvYjEnijFhfRW0SxO84hoOk1U7lH2YfN1mCclfpZSdsZj8lQ1kwlA_DTvwNWRWahF51pM-3g3FWxZ7hqUzmiGu7dEVHd4DWJIrs4y62450PP5LZPu0m5YkgjMvIx-YfuFG64nfvNMgJ-83w' \
+-H 'cache-control: no-cache' \
+-H 'content-type: application/json' \
+-H 'postman-token: 52ffeb4b-3c46-eb10-ccad-984e36c4b3bd' \
+-d '{
+"currentPassword": "samrat1234",
+"newPassword": "samrat123",
+"confirmation": "samrat123"
+}'
 
+curl -X GET \
+http://localhost:8080/auth/admin/realms/skillzag-realm/users \
+-H 'authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ1dzNkdlp3T3BMMjJyVkFFRnRMV0x2WTkzdlMydGhIUXIyeWV5b19rVTkwIn0.eyJleHAiOjE2MjgyMTczMzUsImlhdCI6MTYyODIxNzI3NSwianRpIjoiODgzMTlkNzQtNjVkMS00ODFiLWJmMDEtZWU2YTQ0MTdhNGUxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL21hc3RlciIsInN1YiI6ImY5NzkwODIyLTc1Y2YtNDg2OS05N2IwLWYwNjU0NWNkNDUzYyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNlc3Npb25fc3RhdGUiOiJmYWZhNTc4Ni01OGQ3LTQ5NWYtYmEwZi1lYmI5Y2QzNjhkZjQiLCJhY3IiOiIxIiwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiU2FtcmF0IEJhc3UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhZG1pbiIsImdpdmVuX25hbWUiOiJTYW1yYXQiLCJmYW1pbHlfbmFtZSI6IkJhc3UiLCJlbWFpbCI6ImhhY2thdGhvbi5pbmZ5MjAyMEBnbWFpbC5jb20ifQ.Y0dq3PsS10O1KezuGd2CZfA5-ChDHe1t5x_WI_GrrPA9v8mZYtTj1_dKlty5JilGpaeagTIHIq-M0YrkGQw_8uyWP1nYPuro0nubUrwUpauB7epQsSGdbpyiV8M4ITILGyRK4yjEyj9vjkVez1j-U6rYbDXp0jzUU6hN050bQ02jyj-bVD9c3ObonLFomnjvIITObraUahYnrFyxVvy3KkmFuSjsTj7AGfK0B9w4MWff1FRBzGLnrxRCZnerjAlOw1uuqQ5uFGgawV_N2oyPDYIs7fwCR1GYbvRTzm53zgs95XH3eNZPdQFy0iN8vvJpO0iqTsXelH18iRSWY5AiKA' \
+-H 'cache-control: no-cache' \
+-H 'postman-token: fcf9db47-218d-2451-4c53-f6c47ff7ac65'
+
+curl -X POST \
+http://localhost:8080/auth/realms/master/protocol/openid-connect/token \
+-H 'accept: application/json' \
+-H 'cache-control: no-cache' \
+-H 'content-type: application/x-www-form-urlencoded' \
+-H 'postman-token: 69b7c9d9-bd99-2701-a424-4ac18ef388e2' \
+-d 'client_id=admin-cli&grant_type=password&username=admin&password=admin'
