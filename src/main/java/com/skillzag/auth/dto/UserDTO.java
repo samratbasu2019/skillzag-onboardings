@@ -13,7 +13,7 @@ public class UserDTO {
     @NotNull
     @Email
 	private String email;
-    @Pattern(regexp = "b2b|b2c")
+    @Pattern(regexp = "b2b|b2c|b2badmin|platformadmin")
     @NotEmpty(message = "role can not be empty")
     @NotNull
     private String role;

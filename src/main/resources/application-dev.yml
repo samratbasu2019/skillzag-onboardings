@@ -14,7 +14,7 @@ keycloak:
   use-resource-role-mappings: true
 server:
   connection-timeout: 6000
-  port: 8055
+  port: 8061
   servlet:
     context-path: /skillzag/auth
 
