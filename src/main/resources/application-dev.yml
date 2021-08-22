@@ -1,8 +1,8 @@
 app:
-  secret: ed169803-d750-4c02-8add-38b1c3e4594d
+  secret: 53e3cf11-85c8-4601-a9de-fac3b6420f3c
   keycloak:
     userid: admin
-    password: admin
+    password: PostAdm@ssw0rd229
   user:
     url: http://localhost:8080/auth/admin/realms/skillzag-realm/users/
 keycloak:
