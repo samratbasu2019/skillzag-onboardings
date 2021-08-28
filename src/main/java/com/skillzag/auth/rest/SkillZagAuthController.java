@@ -4,6 +4,7 @@ import java.util.*;
 import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
+import com.skillzag.auth.dto.AuthDTO;
 import com.skillzag.auth.util.ResponseHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -21,10 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.skillzag.auth.dto.UserDTO;
+import org.springframework.web.client.RestTemplate;
 
 import static com.skillzag.auth.util.Constants.EMPTY_ROLE_MESSAGE;
 import static java.util.Objects.isNull;
@@ -123,6 +127,32 @@ public class SkillZagAuthController {
         return ResponseEntity.ok("This api is NOT protected.");
     }
 
+    @PostMapping(path = "/login")
+    public ResponseEntity<?> userLogin(@RequestBody AuthDTO userDTO) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<String, String>();
+        requestBody.add("client_id", "skillzag-app");
+        requestBody.add("grant_type", "password");
+        requestBody.add("username", userDTO.getEmail());
+        requestBody.add("password", userDTO.getPassword());
+
+        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(requestBody, headers);
+        ResponseEntity<?> response;
+        try {
+            response =
+                    restTemplate.exchange(authServerUrl + "/realms/skillzag-realm/protocol/openid-connect/token"
+                            , HttpMethod.POST, formEntity, Object.class);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(response.getBody());
+
+    }
 
     @GetMapping(value = "/decrypt-token")
     public ResponseEntity<?> decryptToken(@RequestHeader String authorization) {

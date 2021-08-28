@@ -37,7 +37,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/users/unprotected-api").permitAll()
                 .antMatchers("/users/create").permitAll()
-                .antMatchers("/users/signin").permitAll()
+                .antMatchers("/users/login").permitAll()
+                .antMatchers("/skillzag/auth/*").permitAll()
                 .antMatchers("/auth/*").permitAll()
                 .anyRequest().authenticated();
     }
