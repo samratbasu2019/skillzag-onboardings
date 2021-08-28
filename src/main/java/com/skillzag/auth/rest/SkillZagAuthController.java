@@ -33,6 +33,7 @@ import static java.util.Objects.isNull;
 @Validated
 @RequestMapping(value = "/users")
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class SkillZagAuthController {
 
     private static final Logger log = LoggerFactory.getLogger(SkillZagAuthController.class);
