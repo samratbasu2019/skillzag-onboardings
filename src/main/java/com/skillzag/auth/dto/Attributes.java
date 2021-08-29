@@ -15,5 +15,12 @@ public class Attributes {
     private List<String> institutionID = null;
 
     private List<String> institutionName = null;
+    private List<String> address1;
+    private List<String> address2;
+    private List<Long> validFrom;
+    private List<Long> validTo;
+    private List<String> subscriptionType;
+    private List<Long> subscriptionStartDate;
+    private List<Long> subscriptionEndDate;
 
 }

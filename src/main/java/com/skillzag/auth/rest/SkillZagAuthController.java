@@ -1,6 +1,7 @@
 package com.skillzag.auth.rest;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
@@ -66,6 +67,8 @@ public class SkillZagAuthController {
     @Value("${app.user.url}")
     private String userUrl;
 
+    final ObjectMapper mapper = new ObjectMapper();
+
     @PostMapping(path = "/create")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
         if (isNull(userDTO.getRole())) {
@@ -93,6 +96,21 @@ public class SkillZagAuthController {
         }
         if (!isNull(userDTO.getAddress2())) {
             attributes.put("address2", Arrays.asList(userDTO.getAddress2()));
+        }
+        if (!isNull(userDTO.getValidFrom())) {
+            attributes.put("validFrom", Arrays.asList(userDTO.getValidFrom().toString()));
+        }
+        if (!isNull(userDTO.getValidTo())) {
+            attributes.put("validTo", Arrays.asList(userDTO.getValidTo().toString()));
+        }
+        if (!isNull(userDTO.getSubscriptionType())) {
+            attributes.put("validTo", Arrays.asList(userDTO.getSubscriptionType()));
+        }
+        if (!isNull(userDTO.getSubscriptionStartDate())) {
+            attributes.put("subscriptionStartDate", Arrays.asList(userDTO.getSubscriptionStartDate().toString()));
+        }
+        if (!isNull(userDTO.getSubscriptionEndDate())) {
+            attributes.put("subscriptionEndDate", Arrays.asList(userDTO.getSubscriptionEndDate().toString()));
         }
         keycloak.tokenManager().getAccessToken();
         String token = keycloak.tokenManager().getAccessTokenString();
@@ -180,16 +198,20 @@ public class SkillZagAuthController {
         headers.add("Authorization", "bearer " + getAdminToken());
         HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
         ResponseEntity<?> response;
+        final List<Contract> res;
         try {
-            response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users/?role="
-                    + role, HttpMethod.GET, formEntity, Object.class);
+            response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users",
+                    HttpMethod.GET, formEntity, Object.class);
 
+            final List<Contract> responseObj = mapper.convertValue(response.getBody(), new TypeReference<List<Contract>>() {
+            });
+           res = responseObj.stream().filter(f -> f.getAttributes().getRole().contains(role)).collect(Collectors.toList());
         } catch (Exception e) {
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
                     HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(response.getBody());
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping(path = "/login")
@@ -262,7 +284,6 @@ public class SkillZagAuthController {
         try {
             response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users/?username="
                     + userId, HttpMethod.GET, formEntity, Object.class);
-            final ObjectMapper mapper = new ObjectMapper();
             final List<Contract> pojo = mapper.convertValue(response.getBody(), new TypeReference<List<Contract>>() {
             });
             id = pojo.get(0).getId();
