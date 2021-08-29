@@ -4,7 +4,10 @@ import java.util.*;
 import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillzag.auth.dto.AuthDTO;
+import com.skillzag.auth.dto.Contract;
 import com.skillzag.auth.util.ResponseHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -125,22 +128,56 @@ public class SkillZagAuthController {
 
     @GetMapping(value = "/all")
     public ResponseEntity<?> getAllUsers() {
-        Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
-                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
-                .username(userid).password(password)
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
-        keycloak.tokenManager().getAccessToken();
-        String token = keycloak.tokenManager().getAccessTokenString();
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "bearer " + token);
+        headers.add("Authorization", "bearer " + getAdminToken());
         HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
         ResponseEntity<?> response;
         try {
             response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users"
                     , HttpMethod.GET, formEntity , Object.class);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(response.getBody());
+    }
+
+    @GetMapping(value = "/by-userid/{userId}")
+    public ResponseEntity<?> getUserById(@PathVariable("userId") String userId) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "bearer " + getAdminToken());
+        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
+        ResponseEntity<?> response;
+        try {
+            response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users/?username="
+                   + userId, HttpMethod.GET, formEntity , Object.class);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(response.getBody());
+    }
+
+    @GetMapping(value = "/by-role/{role}")
+    public ResponseEntity<?> getUserByType(@PathVariable("role") String role) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "bearer " + getAdminToken());
+        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
+        ResponseEntity<?> response;
+        try {
+            response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users/?role="
+                    + role, HttpMethod.GET, formEntity , Object.class);
 
         } catch (Exception e) {
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
@@ -198,4 +235,44 @@ public class SkillZagAuthController {
         return ResponseEntity.ok(body);
     }
 
+    private String getAdminToken(){
+        Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
+                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
+                .username(userid).password(password)
+                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
+        keycloak.tokenManager().getAccessToken();
+       return keycloak.tokenManager().getAccessTokenString();
+    }
+
+    @PostMapping(value = "/{userId}/reset-password")
+    public ResponseEntity<?> resetPassword(@PathVariable("userId") String userId) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "bearer " + getAdminToken());
+        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
+        ResponseEntity<?> response;
+        String id;
+        try {
+            response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users/?username="
+                    + userId, HttpMethod.GET, formEntity , Object.class);
+            final ObjectMapper mapper = new ObjectMapper();
+            final List<Contract> pojo = mapper.convertValue(response.getBody(), new TypeReference<List<Contract>>() {});
+
+            id = pojo.get(0).getId();
+            log.info("event=resetPassword user-id {}", id);
+
+            HttpEntity resetPWDEntity = new HttpEntity<MultiValueMap<String, String>>(
+                    null, headers);
+            ResponseEntity<?> resetPWDResponse = restTemplate.exchange(authServerUrl +
+                    "/admin/realms/skillzag-realm/users/" + id + "/execute-actions-email", HttpMethod.PUT, resetPWDEntity , Object.class);
+
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(id);
+    }
 }
