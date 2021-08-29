@@ -31,6 +31,7 @@ import com.skillzag.auth.dto.UserDTO;
 import org.springframework.web.client.RestTemplate;
 
 import static com.skillzag.auth.util.Constants.EMPTY_ROLE_MESSAGE;
+import static com.skillzag.auth.util.Constants.INVALID_CREDENTIAL_MESSAGE;
 import static java.util.Objects.isNull;
 
 
@@ -122,9 +123,31 @@ public class SkillZagAuthController {
         return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping(value = "/unprotected-api")
-    public ResponseEntity<?> getName() {
-        return ResponseEntity.ok("This api is NOT protected.");
+    @GetMapping(value = "/all")
+    public ResponseEntity<?> getAllUsers() {
+        Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
+                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
+                .username(userid).password(password)
+                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
+        keycloak.tokenManager().getAccessToken();
+        String token = keycloak.tokenManager().getAccessTokenString();
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "bearer " + token);
+        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
+        ResponseEntity<?> response;
+        try {
+            response = restTemplate.exchange(authServerUrl + "/admin/realms/skillzag-realm/users"
+                    , HttpMethod.GET, formEntity , Object.class);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(response.getBody());
     }
 
     @PostMapping(path = "/login")
@@ -142,12 +165,12 @@ public class SkillZagAuthController {
         HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(requestBody, headers);
         ResponseEntity<?> response;
         try {
-            response =
-                    restTemplate.exchange(authServerUrl + "/realms/skillzag-realm/protocol/openid-connect/token"
+            response = restTemplate.exchange(authServerUrl + "/realms/skillzag-realm/protocol/openid-connect/token"
                             , HttpMethod.POST, formEntity, Object.class);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
         }
 
         return ResponseEntity.ok(response.getBody());

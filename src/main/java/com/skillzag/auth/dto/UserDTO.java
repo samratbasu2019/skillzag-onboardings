@@ -37,4 +37,9 @@ public class UserDTO {
     private String institutionID;
     private String address1;
     private String address2;
+    private Long validFrom;
+    private Long validTo;
+    private String subscriptionType;
+    private Long subscriptionStartDate;
+    private Long subscriptionEndDate;
 }
