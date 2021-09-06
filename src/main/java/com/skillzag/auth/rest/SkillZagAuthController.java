@@ -249,9 +249,9 @@ public class SkillZagAuthController {
         String body = new String(base64Url.decode(base64EncodedBody));
         Map<String, Object> responseObj =  new ObjectMapper().readValue(body, Map.class);
         Map<String, Object> res = new HashMap<>();
-        res.put("role", responseObj.get("role"));
-        res.put("email", responseObj.get("email"));
         res.put("status", "success");
+        res.put("role", responseObj.get("role"));
+        res.put("token", authorization);
         return ResponseEntity.ok(res);
     }
 
