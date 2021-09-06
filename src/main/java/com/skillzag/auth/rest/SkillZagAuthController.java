@@ -216,7 +216,7 @@ public class SkillZagAuthController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<?> userLogin(@RequestBody AuthDTO userDTO) {
+    public ResponseEntity<?> userLogin(@RequestBody AuthDTO userDTO) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -238,8 +238,21 @@ public class SkillZagAuthController {
                     HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(response.getBody());
+        return decodeToken(response.getBody().toString());
 
+    }
+
+    private  ResponseEntity<?> decodeToken(String authorization) throws JsonProcessingException {
+        String[] parts = authorization.split("\\.");
+        String base64EncodedBody = parts[1];
+        Base64 base64Url = new Base64(true);
+        String body = new String(base64Url.decode(base64EncodedBody));
+        Map<String, Object> responseObj =  new ObjectMapper().readValue(body, Map.class);
+        Map<String, Object> res = new HashMap<>();
+        res.put("role", responseObj.get("role"));
+        res.put("email", responseObj.get("email"));
+        res.put("status", "success");
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping(value = "/decrypt-token")
