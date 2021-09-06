@@ -251,6 +251,7 @@ public class SkillZagAuthController {
         Map<String, Object> res = new HashMap<>();
         res.put("status", "success");
         res.put("role", responseObj.get("role"));
+        res.put("email", responseObj.get("email"));
         res.put("token", authorization);
         return ResponseEntity.ok(res);
     }
