@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillzag.auth.dto.AuthDTO;
@@ -242,7 +243,7 @@ public class SkillZagAuthController {
     }
 
     @GetMapping(value = "/decrypt-token")
-    public ResponseEntity<?> decryptToken(@RequestHeader String authorization) {
+    public ResponseEntity<?> decryptToken(@RequestHeader String authorization) throws JsonProcessingException {
         java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
         String[] parts = authorization.split("\\.");
 
@@ -259,7 +260,9 @@ public class SkillZagAuthController {
         String body = new String(base64Url.decode(base64EncodedBody));
         log.info("JWT Body {} ", body);
 
-        return ResponseEntity.ok(body);
+        Map<String, Object> responseObj =  new ObjectMapper().readValue(body, Map.class);
+
+        return ResponseEntity.ok(responseObj);
     }
 
     private String getAdminToken() {
