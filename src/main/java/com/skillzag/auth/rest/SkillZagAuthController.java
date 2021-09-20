@@ -252,6 +252,7 @@ public class SkillZagAuthController {
         res.put("status", "success");
         res.put("role", responseObj.get("role"));
         res.put("email", responseObj.get("email"));
+        res.put("institutionID", responseObj.get("institutionID"));
         res.put("token", authorization);
         return ResponseEntity.ok(res);
     }
