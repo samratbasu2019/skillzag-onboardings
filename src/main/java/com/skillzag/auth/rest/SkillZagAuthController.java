@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillzag.auth.dto.AuthDTO;
 import com.skillzag.auth.dto.Contract;
+import com.skillzag.auth.dto.UserAttribute;
 import com.skillzag.auth.util.ResponseHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -105,7 +106,7 @@ public class SkillZagAuthController {
             attributes.put("validTo", Arrays.asList(userDTO.getValidTo().toString()));
         }
         if (!isNull(userDTO.getSubscriptionType())) {
-            attributes.put("validTo", Arrays.asList(userDTO.getSubscriptionType()));
+            attributes.put("subscriptionType", Arrays.asList(userDTO.getSubscriptionType()));
         }
         if (!isNull(userDTO.getSubscriptionStartDate())) {
             attributes.put("subscriptionStartDate", Arrays.asList(userDTO.getSubscriptionStartDate().toString()));
@@ -148,6 +149,28 @@ public class SkillZagAuthController {
             userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));
         }
         return ResponseEntity.ok(userDTO);
+    }
+
+    @PostMapping(value = "/update/{id}")
+    public ResponseEntity<?> updateUsers(@PathVariable("id") String userId, @RequestBody UserAttribute userAttribute) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.add("authorization", "bearer " + getAdminToken());
+        HttpEntity<UserAttribute> formEntity = new HttpEntity<UserAttribute>(userAttribute,headers);
+        ResponseEntity<?> response;
+        try {
+            String url = authServerUrl + "/admin/realms/skillzag-realm/users/" + userId;
+            log.info("event=updateUsers url {}", url);
+            response = restTemplate.exchange(url, HttpMethod.PUT, formEntity, Object.class);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(response.getBody());
     }
 
     @GetMapping(value = "/all")
