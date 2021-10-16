@@ -22,5 +22,6 @@ public class Attributes {
     private List<String> subscriptionType;
     private List<Long> subscriptionStartDate;
     private List<Long> subscriptionEndDate;
+    private List<String> imagePath;
 
 }

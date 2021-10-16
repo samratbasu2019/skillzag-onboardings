@@ -12,4 +12,7 @@ public class Constants {
 	public final static String INVALID_INSTITUTION = "Invalid institution name or id";
 	public final static String INVALID_FIRSTNAME = "Invalid first name.";
 	public final static String INVALID_LASTNAME = "Invalid last name.";
+	public final static String INVALID_IMAGEFILE = "Pls select an image file to upload.";
+	public final static String INVALID_USER_ATTRIBUTE = "Invalid user attribute in request.";
+	public final static String REQUEST_SUCCESSFUL = "Request processed successfully.";
 }

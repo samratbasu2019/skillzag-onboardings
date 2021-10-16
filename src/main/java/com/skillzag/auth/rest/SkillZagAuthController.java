@@ -12,9 +12,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillzag.auth.dto.AuthDTO;
-import com.skillzag.auth.dto.Contract;
-import com.skillzag.auth.dto.UserAttribute;
+import com.skillzag.auth.dto.*;
 import com.skillzag.auth.util.ResponseHelper;
 import com.skillzag.auth.util.Utility;
 import org.apache.commons.codec.binary.Base64;
@@ -47,7 +45,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.skillzag.auth.dto.UserDTO;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -340,6 +337,65 @@ public class SkillZagAuthController {
         res.put("imagePath", responseObj.get("imagePath").toString().replace(imageContext,""));
         res.put("token", authorization);
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/upload/{id}")
+    public ResponseEntity uploadImageToLocalFileSystem(@RequestParam("file") MultipartFile file,
+                                                       @PathVariable("id") String userId, String attribute) {
+        if (!isNull(file) && !StringUtils.isEmpty(file.getOriginalFilename())) {
+            UserAttribute userAttribute;
+            try {
+                 userAttribute = mapper.readValue(attribute, new TypeReference<UserAttribute>() {
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_USER_ATTRIBUTE, HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.BAD_REQUEST);
+            }
+            if (!isNull(userAttribute)) {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                String extension = FilenameUtils.getExtension(fileName);
+                final String uuid = UUID.randomUUID().toString().replace("-", "");
+                String finalFileName = uuid + "." + extension;
+                Path path = Paths.get(imageContext + finalFileName);
+                log.info("Path is path {}", path.toString());
+                try {
+                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path(imageContext)
+                        .path(fileName)
+                        .toUriString();
+                log.info("event=createUser uploaded image location {}", fileDownloadUri);
+
+                Attributes attributes = userAttribute.getAttributes();
+                attributes.setImagePath(Arrays.asList(path.toString()));
+                userAttribute.setAttributes(attributes);
+                RestTemplate restTemplate = new RestTemplate();
+                HttpHeaders headers = new HttpHeaders();
+                headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+                headers.add("authorization", "bearer " + getAdminToken());
+                HttpEntity<UserAttribute> formEntity = new HttpEntity<UserAttribute>(userAttribute, headers);
+                ResponseEntity<?> response;
+                try {
+                    String url = authServerUrl + "/admin/realms/skillzag-realm/users/" + userId;
+                    log.info("event=updateUsers url {}", url);
+                    response = restTemplate.exchange(url, HttpMethod.PUT, formEntity, Object.class);
+
+                } catch (Exception e) {
+                    return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
+                            HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+                }
+                return new ResponseEntity<>(ResponseHelper.populateRresponse(REQUEST_SUCCESSFUL,
+                        HttpStatus.OK.value()), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_USER_ATTRIBUTE, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_IMAGEFILE, HttpStatus.BAD_REQUEST.value()),
+                HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/download/{fileName:.+}")
