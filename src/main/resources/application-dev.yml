@@ -24,3 +24,9 @@ logging:
     org:
       springframework: INFO
     root: INFO
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 15MB
+      max-file-size: 10MB

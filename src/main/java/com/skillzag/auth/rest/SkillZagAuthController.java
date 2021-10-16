@@ -1,8 +1,12 @@
 package com.skillzag.auth.rest;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,7 +16,9 @@ import com.skillzag.auth.dto.AuthDTO;
 import com.skillzag.auth.dto.Contract;
 import com.skillzag.auth.dto.UserAttribute;
 import com.skillzag.auth.util.ResponseHelper;
+import com.skillzag.auth.util.Utility;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
@@ -32,17 +38,21 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.skillzag.auth.dto.UserDTO;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import static com.skillzag.auth.util.Constants.EMPTY_ROLE_MESSAGE;
-import static com.skillzag.auth.util.Constants.INVALID_CREDENTIAL_MESSAGE;
+import static com.skillzag.auth.util.Constants.*;
 import static java.util.Objects.isNull;
 
 
@@ -68,13 +78,38 @@ public class SkillZagAuthController {
     private String password;
     @Value("${app.user.url}")
     private String userUrl;
+    @Value("${app.image-upload-path}")
+    private String imageContext;
 
     final ObjectMapper mapper = new ObjectMapper();
 
     @PostMapping(path = "/create")
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
-        if (isNull(userDTO.getRole())) {
+    public ResponseEntity<?> createUser(String request,
+                                        @RequestParam(value = "file", required = false) MultipartFile file) throws JsonProcessingException {
+        UserDTO userDTO = mapper.readValue(request, new TypeReference<UserDTO>() {});
+        if (isNull(userDTO.getRole()) || !(Arrays.asList("b2b","b2c","b2badmin", "platformadmin").contains(userDTO.getRole()))) {
             return new ResponseEntity<>(ResponseHelper.populateRresponse(EMPTY_ROLE_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (isNull(userDTO.getEmail()) || !(Utility.isValidEmail(userDTO.getEmail()))) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_EMAIL, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (isNull(userDTO.getPassword()) || StringUtils.isEmpty(userDTO.getPassword())) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_PASSWORD, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (isNull(userDTO.getInstitutionID()) || StringUtils.isEmpty(userDTO.getInstitutionID())) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_INSTITUTION, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (isNull(userDTO.getFirstname()) || StringUtils.isEmpty(userDTO.getFirstname())) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_FIRSTNAME, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (isNull(userDTO.getLastname()) || StringUtils.isEmpty(userDTO.getLastname())) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_LASTNAME, HttpStatus.BAD_REQUEST.value()),
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -113,6 +148,27 @@ public class SkillZagAuthController {
         }
         if (!isNull(userDTO.getSubscriptionEndDate())) {
             attributes.put("subscriptionEndDate", Arrays.asList(userDTO.getSubscriptionEndDate().toString()));
+        }
+
+        if (!StringUtils.isEmpty(file.getOriginalFilename())) {
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String extension = FilenameUtils.getExtension(fileName);
+            final String uuid = UUID.randomUUID().toString().replace("-", "");
+            String finalFileName = uuid + "."+ extension;
+            Path path = Paths.get(imageContext + finalFileName);
+            log.info("Path is path {}", path.toString());
+            try {
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(imageContext)
+                    .path(fileName)
+                    .toUriString();
+            log.info("event=createUser uploaded image location {}", fileDownloadUri);
+
+            attributes.put("imagePath", Arrays.asList(path.toString()));
         }
         keycloak.tokenManager().getAccessToken();
         String token = keycloak.tokenManager().getAccessTokenString();
@@ -231,6 +287,7 @@ public class SkillZagAuthController {
             });
            res = responseObj.stream().filter(f -> f.getAttributes().getRole().contains(role)).collect(Collectors.toList());
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
                     HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
         }
@@ -243,6 +300,10 @@ public class SkillZagAuthController {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        if (!isNull(userDTO.getHasTermsChecked()) && !userDTO.getHasTermsChecked()) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(CHECK_TERMS_CONDITION,
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<String, String>();
         requestBody.add("client_id", "skillzag-app");
@@ -276,8 +337,25 @@ public class SkillZagAuthController {
         res.put("role", responseObj.get("role"));
         res.put("email", responseObj.get("email"));
         res.put("institutionID", responseObj.get("institutionID"));
+        res.put("imagePath", responseObj.get("imagePath").toString().replace(imageContext,""));
         res.put("token", authorization);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/download/{fileName:.+}")
+    public ResponseEntity downloadImageFromLocal(@PathVariable String fileName) {
+        String contentType = "application/octet-stream";
+        Path path = Paths.get(imageContext + fileName);
+        Resource resource = null;
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
     @GetMapping(value = "/decrypt-token")

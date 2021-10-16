@@ -53,6 +53,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .antMatchers("/users/by-userid/*").permitAll()
                 .antMatchers("/users/by-role/*").permitAll()
                 .antMatchers("/users/update/*").permitAll()
+                .antMatchers("/users/download/*").permitAll()
                 .antMatchers("/users/*/reset-password").permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated();
