@@ -3,7 +3,7 @@ app:
   keycloak:
     userid: admin
     password: PostAdm@ssw0rd229
-  image-upload-path: /Users/samrat/Desktop/image/
+  image-upload-path: /root/skill-zag/micro-services/image/
   user:
     url: http://localhost:8080/auth/admin/realms/skillzag-realm/users/
 keycloak:
