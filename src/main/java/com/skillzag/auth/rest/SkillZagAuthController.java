@@ -334,7 +334,9 @@ public class SkillZagAuthController {
         res.put("role", responseObj.get("role"));
         res.put("email", responseObj.get("email"));
         res.put("institutionID", responseObj.get("institutionID"));
-        res.put("imagePath", responseObj.get("imagePath").toString().replace(imageContext,""));
+        if (!isNull(responseObj.get("imagePath")) && !StringUtils.isEmpty(responseObj.get("imagePath").toString())) {
+            res.put("imagePath", responseObj.get("imagePath").toString().replace(imageContext, ""));
+        }
         res.put("token", authorization);
         return ResponseEntity.ok(res);
     }
