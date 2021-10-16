@@ -150,7 +150,7 @@ public class SkillZagAuthController {
             attributes.put("subscriptionEndDate", Arrays.asList(userDTO.getSubscriptionEndDate().toString()));
         }
 
-        if (!StringUtils.isEmpty(file.getOriginalFilename())) {
+        if (!isNull(file) && !StringUtils.isEmpty(file.getOriginalFilename())) {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             String extension = FilenameUtils.getExtension(fileName);
             final String uuid = UUID.randomUUID().toString().replace("-", "");
