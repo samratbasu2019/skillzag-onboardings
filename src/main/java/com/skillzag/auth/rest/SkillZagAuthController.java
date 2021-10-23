@@ -83,8 +83,9 @@ public class SkillZagAuthController {
     @PostMapping(path = "/create")
     public ResponseEntity<?> createUser(String request,
                                         @RequestParam(value = "file", required = false) MultipartFile file) throws JsonProcessingException {
-        UserDTO userDTO = mapper.readValue(request, new TypeReference<UserDTO>() {});
-        if (isNull(userDTO.getRole()) || !(Arrays.asList("b2b","b2c","b2badmin", "platformadmin").contains(userDTO.getRole()))) {
+        UserDTO userDTO = mapper.readValue(request, new TypeReference<UserDTO>() {
+        });
+        if (isNull(userDTO.getRole()) || !(Arrays.asList("b2b", "b2c", "b2badmin", "platformadmin").contains(userDTO.getRole()))) {
             return new ResponseEntity<>(ResponseHelper.populateRresponse(EMPTY_ROLE_MESSAGE, HttpStatus.BAD_REQUEST.value()),
                     HttpStatus.BAD_REQUEST);
         }
@@ -93,9 +94,12 @@ public class SkillZagAuthController {
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_EMAIL, HttpStatus.BAD_REQUEST.value()),
                     HttpStatus.BAD_REQUEST);
         }
-        if (isNull(userDTO.getPassword()) || StringUtils.isEmpty(userDTO.getPassword())) {
-            return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_PASSWORD, HttpStatus.BAD_REQUEST.value()),
-                    HttpStatus.BAD_REQUEST);
+
+        if (!isNull(userDTO.getIsBulkUpload()) && userDTO.getIsBulkUpload()) {
+            if (isNull(userDTO.getPassword()) || StringUtils.isEmpty(userDTO.getPassword())) {
+                return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_PASSWORD, HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.BAD_REQUEST);
+            }
         }
         if (isNull(userDTO.getInstitutionID()) || StringUtils.isEmpty(userDTO.getInstitutionID())) {
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_INSTITUTION, HttpStatus.BAD_REQUEST.value()),
@@ -151,7 +155,7 @@ public class SkillZagAuthController {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             String extension = FilenameUtils.getExtension(fileName);
             final String uuid = UUID.randomUUID().toString().replace("-", "");
-            String finalFileName = uuid + "."+ extension;
+            String finalFileName = uuid + "." + extension;
             Path path = Paths.get(imageContext + finalFileName);
             log.info("Path is path {}", path.toString());
             try {
@@ -170,7 +174,11 @@ public class SkillZagAuthController {
         keycloak.tokenManager().getAccessToken();
         String token = keycloak.tokenManager().getAccessTokenString();
         UserRepresentation user = new UserRepresentation();
-        user.setEnabled(true);
+        if (!(!isNull(userDTO.getIsBulkUpload()) && userDTO.getIsBulkUpload())) {
+            user.setEnabled(true);
+        } else {
+            user.setEnabled(false);
+        }
         user.setFirstName(userDTO.getFirstname());
         user.setLastName(userDTO.getLastname());
         user.setEmail(userDTO.getEmail());
@@ -190,9 +198,14 @@ public class SkillZagAuthController {
             log.info("Created userId {}", userId);
             // create password credential
             CredentialRepresentation passwordCred = new CredentialRepresentation();
-            passwordCred.setTemporary(false);
+            if (!(!isNull(userDTO.getIsBulkUpload()) && userDTO.getIsBulkUpload())) {
+                passwordCred.setTemporary(true);
+                passwordCred.setValue("SkillZag@Password1");
+            } else {
+                passwordCred.setTemporary(false);
+                passwordCred.setValue(userDTO.getPassword());
+            }
             passwordCred.setType(CredentialRepresentation.PASSWORD);
-            passwordCred.setValue(userDTO.getPassword());
             UserResource userResource = usersRessource.get(userId);
             // Set password credential
             userResource.resetPassword(passwordCred);
@@ -200,6 +213,9 @@ public class SkillZagAuthController {
             RoleRepresentation realmRoleUser = realmResource.roles().get(userDTO.getRole()).toRepresentation();
             // Assign realm role student to user
             userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));
+            if (!(!isNull(userDTO.getIsBulkUpload()) && userDTO.getIsBulkUpload())) {
+                userResource.sendVerifyEmail();
+            }
         }
         return ResponseEntity.ok(userDTO);
     }
@@ -211,7 +227,7 @@ public class SkillZagAuthController {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.add("authorization", "bearer " + getAdminToken());
-        HttpEntity<UserAttribute> formEntity = new HttpEntity<UserAttribute>(userAttribute,headers);
+        HttpEntity<UserAttribute> formEntity = new HttpEntity<UserAttribute>(userAttribute, headers);
         ResponseEntity<?> response;
         try {
             String url = authServerUrl + "/admin/realms/skillzag-realm/users/" + userId;
@@ -282,7 +298,7 @@ public class SkillZagAuthController {
 
             final List<Contract> responseObj = mapper.convertValue(response.getBody(), new TypeReference<List<Contract>>() {
             });
-           res = responseObj.stream().filter(f -> f.getAttributes().getRole().contains(role)).collect(Collectors.toList());
+            res = responseObj.stream().filter(f -> f.getAttributes().getRole().contains(role)).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_CREDENTIAL_MESSAGE,
@@ -323,12 +339,12 @@ public class SkillZagAuthController {
 
     }
 
-    private  ResponseEntity<?> decodeToken(String authorization) throws JsonProcessingException {
+    private ResponseEntity<?> decodeToken(String authorization) throws JsonProcessingException {
         String[] parts = authorization.split("\\.");
         String base64EncodedBody = parts[1];
         Base64 base64Url = new Base64(true);
         String body = new String(base64Url.decode(base64EncodedBody));
-        Map<String, Object> responseObj =  new ObjectMapper().readValue(body, Map.class);
+        Map<String, Object> responseObj = new ObjectMapper().readValue(body, Map.class);
         Map<String, Object> res = new HashMap<>();
         res.put("status", "success");
         res.put("role", responseObj.get("role"));
@@ -347,7 +363,7 @@ public class SkillZagAuthController {
         if (!isNull(file) && !StringUtils.isEmpty(file.getOriginalFilename())) {
             UserAttribute userAttribute;
             try {
-                 userAttribute = mapper.readValue(attribute, new TypeReference<UserAttribute>() {
+                userAttribute = mapper.readValue(attribute, new TypeReference<UserAttribute>() {
                 });
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -434,7 +450,7 @@ public class SkillZagAuthController {
         String body = new String(base64Url.decode(base64EncodedBody));
         log.info("JWT Body {} ", body);
 
-        Map<String, Object> responseObj =  new ObjectMapper().readValue(body, Map.class);
+        Map<String, Object> responseObj = new ObjectMapper().readValue(body, Map.class);
 
         return ResponseEntity.ok(responseObj);
     }

@@ -42,4 +42,5 @@ public class UserDTO {
     private String subscriptionType;
     private Long subscriptionStartDate;
     private Long subscriptionEndDate;
+    private Boolean isBulkUpload;
 }
