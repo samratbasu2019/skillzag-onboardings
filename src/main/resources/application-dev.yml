@@ -4,6 +4,7 @@ app:
     userid: admin
     password: PostAdm@ssw0rd229
   image-upload-path: /root/skill-zag/micro-services/image/
+  achievement-upload-path: /root/skill-zag/micro-services/achivement/
   user:
     url: http://103.241.145.14:8080/auth/admin/realms/skillzag-realm/users/
 keycloak:

@@ -77,6 +77,8 @@ public class SkillZagAuthController {
     private String userUrl;
     @Value("${app.image-upload-path}")
     private String imageContext;
+    @Value("${app.achievement-upload-path}")
+    private String achievementContext;
 
     final ObjectMapper mapper = new ObjectMapper();
 
@@ -411,6 +413,33 @@ public class SkillZagAuthController {
             }
             return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_USER_ATTRIBUTE, HttpStatus.BAD_REQUEST.value()),
                     HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_IMAGEFILE, HttpStatus.BAD_REQUEST.value()),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/achievement/upload")
+    public ResponseEntity uploadImageToFileSystem(@RequestParam("file") MultipartFile file) {
+        if (!isNull(file) && !StringUtils.isEmpty(file.getOriginalFilename())) {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                String extension = FilenameUtils.getExtension(fileName);
+                final String uuid = UUID.randomUUID().toString().replace("-", "");
+                String finalFileName = uuid + "." + extension;
+                Path path = Paths.get(achievementContext + finalFileName);
+                log.info("Image path is {}", path.toString());
+                try {
+                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path(achievementContext)
+                        .path(fileName)
+                        .toUriString();
+                log.info("event=createUser uploaded image location {}", fileDownloadUri);
+
+                return new ResponseEntity<>(ResponseHelper.populateRresponse(REQUEST_SUCCESSFUL,
+                        HttpStatus.OK.value()), HttpStatus.OK);
         }
         return new ResponseEntity<>(ResponseHelper.populateRresponse(INVALID_IMAGEFILE, HttpStatus.BAD_REQUEST.value()),
                 HttpStatus.BAD_REQUEST);
