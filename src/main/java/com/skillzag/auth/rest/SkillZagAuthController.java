@@ -285,6 +285,26 @@ public class SkillZagAuthController {
         return ResponseEntity.ok(response.getBody());
     }
 
+    @DeleteMapping(value = "/delete-by-userid/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable("id") String userId) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "bearer " + getAdminToken());
+        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(null, headers);
+        ResponseEntity<?> response;
+        try {
+            response = restTemplate.exchange(authServerUrl + "/admin/realms/" + realm + "/users/"
+                    + userId, HttpMethod.DELETE, formEntity, Object.class);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHelper.populateRresponse(e.getMessage(),
+                    HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(response.getBody());
+    }
+
     @GetMapping(value = "/by-role/{role}")
     public ResponseEntity<?> getUserByType(@PathVariable("role") String role) {
         RestTemplate restTemplate = new RestTemplate();
